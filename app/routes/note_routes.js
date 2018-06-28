@@ -2,15 +2,14 @@ var ObjectId = require('mongodb').ObjectId
 
 module.exports = function(app, db) {
     const collection = db.collection('notes');
-    
-    app.get('/notes/:id', (req, res) => {
+
+    app.get('/notes', (req, res) => {
         id = req.params.id;
-        const query = {'_id' : new ObjectId(id)};
-        collection.findOne(query, (err, item) => {
+        const query = {};
+        collection.find(query).toArray( (err, items) => {
             if(err) return res.send({'error' : 'An error occured'});
-            res.send(item)
+            res.send(items)
         });
-        
     });
 
     app.post('/notes', (req, res) => {
@@ -22,6 +21,16 @@ module.exports = function(app, db) {
             if(err) return res.send({'error' : 'An error occured'});
             res.send(result.ops[0])
         });
+    });
+
+    app.get('/notes/:id', (req, res) => {
+        id = req.params.id;
+        const query = {'_id' : new ObjectId(id)};
+        collection.findOne(query, (err, item) => {
+            if(err) return res.send({'error' : 'An error occured'});
+            res.send(item)
+        });
+        
     });
 
     app.put('/notes/:id', (req, res) => {
